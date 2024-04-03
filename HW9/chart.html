@@ -40,7 +40,7 @@
     <button id="btn3" class="btn btn-danger">Get MIS 3533</button>
 
     <div id="table"></div>
-    <div>
+    <div style="display:flex;flex-direction:row;">
         <div style="width:400px;">
             <canvas id="c1"></canvas>
         </div>
@@ -61,10 +61,94 @@
         let chart1 = null;
         let chart2 = null;
         let chart3 = null;
+
+        var g;
         {
             let btn1 = document.querySelector("#btn1");
             let btn2 = document.querySelector("#btn2");
             let btn3 = document.querySelector("#btn3");
+
+            async function GetChart(name) {
+
+                if (chart1 != null) {
+                    chart1.destroy();
+                }
+
+                if (chart2 != null) {
+                    chart2.destroy();
+                }
+
+                if (chart3 != null) {
+                    chart3.destroy();
+                }
+
+                let url = "";
+                if (name == "3013") {
+                    url = "https://juxinglong.github.io/static/HW/hw6/MIS3013.json";
+                }
+                else if (name == "3033") {
+                    url = "https://juxinglong.github.io/static/HW/hw6/MIS3033.json";
+                }
+                else {
+                    url = "https://juxinglong.github.io/static/HW/hw6/MIS3353.json";
+                }
+
+                let r = await fetch(url);
+                let rj = await r.json();
+                console.log(rj);
+                g = rj;
+
+                let params =
+                {
+                    type: 'bar',
+                    data: {
+                        labels: rj.map(x=>x.lg),
+                        datasets: [
+                            {
+                                label: 'MIS' + name,
+                                data: rj.map(x=>x.n),
+                            }]
+                    }
+                };
+
+                let c1 = document.querySelector("#c1")
+                chart1 = new Chart(c1, params);
+
+                params =
+                {
+                    type: 'line',
+                    data: {
+                        labels: rj.map(x => x.lg),
+                        datasets: [
+                            {
+                                label: 'MIS' + name,
+                                data: rj.map(x => x.n),
+                            }]
+                    }
+                };
+
+                let c2 = document.querySelector("#c2")
+                chart2 = new Chart(c2, params);
+
+                params =
+                {
+                    type: 'pie',
+                    data: {
+                        labels: rj.map(x => x.lg),
+                        datasets: [
+                            {
+                                label: 'MIS' + name,
+                                data: rj.map(x => x.n),
+                            }]
+                    }
+                };
+
+                let c3 = document.querySelector("#c3")
+                chart3 = new Chart(c3, params);
+
+
+            }
+
 
             async function GetTable(name)
             {
@@ -75,13 +159,13 @@
 
                 let url = "";
                 if (name == "3013") {
-                    let url = "https://juxinglong.github.io/static/HW/hw6/MIS3013.json";
+                    url = "https://juxinglong.github.io/static/HW/hw6/MIS3013.json";
                 }
                 else if (name == "3033") {
-                    let url = "https://juxinglong.github.io/static/HW/hw6/MIS3033.json";
+                    url = "https://juxinglong.github.io/static/HW/hw6/MIS3033.json";
                 }
                 else {
-                    let url = "https://juxinglong.github.io/static/HW/hw6/MIS3353.json";
+                    url = "https://juxinglong.github.io/static/HW/hw6/MIS3353.json";
                 }
 
                 let r = await fetch(url);
@@ -90,6 +174,10 @@
 
                 let params = {
                     data: rj,
+                    width: 400,
+                    search: true,
+                    sort: true,
+                    columns: [{ id: "lg", name: "Letter Grade" }, { id: "n", name: "Number of Students" }]
                 };
 
                 let tableDiv = document.querySelector("#table");
@@ -103,6 +191,7 @@
                 //codes here
 
                 GetTable("3013");
+                GetChart("3013");
 
                 Swal.fire({
                     title: 'Get MIS3013',
@@ -112,6 +201,7 @@
             {
 
                 GetTable("3033");
+                GetChart("3033");
 
                 //codes here
                 Swal.fire({
@@ -122,6 +212,7 @@
             {
 
                 GetTable("3533");
+                GetChart("3533");
 
                 //codes here
                 Swal.fire({
